@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fotos_bg">#121212</color>
+    <color name="fotos_surface">#1E1E1E</color>
+    <color name="fotos_on_surface">#ECECEC</color>
+    <color name="fotos_secondary">#9E9E9E</color>
+    <color name="fotos_accent">#E0E0E0</color>
+</resources>
