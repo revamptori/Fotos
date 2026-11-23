@@ -55,39 +55,43 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="#88000000"
-        android:gravity="space_evenly"
+        android:gravity="center"
         android:orientation="horizontal"
         android:paddingTop="10dp"
         android:paddingBottom="28dp">
 
         <ImageButton
             android:id="@+id/btnShare"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Share"
             android:src="@android:drawable/ic_menu_share" />
 
         <ImageButton
             android:id="@+id/btnFavorite"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Favorite"
             android:src="@android:drawable/btn_star_big_off" />
 
         <ImageButton
             android:id="@+id/btnOpenWith"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Open with"
             android:src="@android:drawable/ic_menu_edit" />
 
         <ImageButton
             android:id="@+id/btnDelete"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Delete"
             android:src="@android:drawable/ic_menu_delete" />
