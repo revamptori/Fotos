@@ -1,0 +1,93 @@
+name: Build Fotos Android APK
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ARM64 Release APK
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK and Build Tools
+        run: |
+          sdkmanager --install "ndk;26.3.11579264" "platforms;android-34" "build-tools;34.0.0"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/26.3.11579264" >> $GITHUB_ENV
+
+      - name: Set up Rust (stable + aarch64-linux-android)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk --locked
+
+      - name: Run Rust unit tests
+        working-directory: rust
+        run: cargo test
+
+      - name: Build Rust engine for arm64-v8a
+        working-directory: rust
+        run: |
+          cargo ndk -t arm64-v8a -o ../android/app/src/main/jniLibs build --release
+          ls -lh ../android/app/src/main/jniLibs/arm64-v8a/libfotos_engine.so
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Run Android unit tests
+        working-directory: android
+        run: gradle testDebugUnitTest
+
+      - name: Build Android Release APK
+        working-directory: android
+        run: gradle assembleRelease
+
+      - name: Verify APK and native library
+        run: |
+          APK_PATH="android/app/build/outputs/apk/release/app-release.apk"
+          if [ ! -f "$APK_PATH" ]; then
+            echo "ERROR: Release APK not found at $APK_PATH"
+            exit 1
+          fi
+          if ! unzip -l "$APK_PATH" | grep -q "lib/arm64-v8a/libfotos_engine.so"; then
+            echo "ERROR: APK does not contain lib/arm64-v8a/libfotos_engine.so"
+            exit 1
+          fi
+          cp "$APK_PATH" Fotos-arm64.apk
+          ls -lh Fotos-arm64.apk
+
+      - name: Upload Fotos-arm64.apk artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fotos-arm64
+          path: Fotos-arm64.apk
+          if-no-files-found: error
+
+      - name: Attach APK to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Fotos-arm64.apk

@@ -1,0 +1,3 @@
+-keep class com.fotos.app.engine.RustEngine { *; }
+-keep class com.fotos.app.engine.MediaItem { *; }
+-keep class com.fotos.app.engine.Album { *; }
